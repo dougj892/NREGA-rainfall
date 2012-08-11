@@ -39,6 +39,7 @@ drop if year == 2006
 xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, fe robust
 estimates store amount_2006_excluded
 
+
 * dump using estout
 *estout amount amount_2006_excluded using "$input\rainfall_regressions.txt", cells(b(star fmt(%9.3f)) p(par fmt(%9.8f)))  stats(r2) replace
 
@@ -61,9 +62,7 @@ cd "$graphs"
 * first attempt at bootstrapping the centiles
 capture program drop boot_centiles
 program boot_centiles, rclass
-	tsset unique_mandal_id year
-	xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, fe robust
-	tsset, clear
+	areg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, robust absorb(unique_mandal_id)
 	capture drop h1_hat
 	generate h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag
 	centile h1_hat, centile(90)
@@ -71,7 +70,7 @@ program boot_centiles, rclass
 end
 
 tsset, clear
-bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles
+bootstrap ratio=r(cent),rep(10) seed(123) dots: boot_centiles
 
 
 /*
