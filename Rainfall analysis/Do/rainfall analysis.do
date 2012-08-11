@@ -70,7 +70,7 @@ program boot_centiles, rclass
 end
 
 tsset, clear
-bootstrap ratio=r(cent),rep(10) seed(123) dots: boot_centiles
+bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles
 
 
 /*
