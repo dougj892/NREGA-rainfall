@@ -75,13 +75,4 @@ foreach i in 10 25 75 90 {
 	bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles `i'
 }
 
-/*
-capture program drop boot_test
-program boot_test, rclass
-	sum amount_per_worker, meanonly
-	return scalar cent = r(mean)
-end
-
-bootstrap dummy=r(cent),rep(10) seed(123) : boot_test
-
 
