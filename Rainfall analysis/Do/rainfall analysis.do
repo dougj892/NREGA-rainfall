@@ -51,8 +51,8 @@ generate mostly_rainfed = (irrigated < median_irr)
 
 * Create historgrams of average amount per worker
 cd "$graphs"
-hist amount_per_worker if amount_per_worker < 1000 & year == 2006, by(year) saving("hist_amount_per_worker 2006", replace)
-hist amount_per_worker if amount_per_worker < 1000 & year != 2006, by(year) saving("hist_amount_per_worker wo 2006", replace)
+* hist amount_per_worker if amount_per_worker < 1000 & year == 2006, by(year) saving("hist_amount_per_worker 2006", replace)
+* hist amount_per_worker if amount_per_worker < 1000 & year != 2006, by(year) saving("hist_amount_per_worker wo 2006", replace)
 
 
 *** 2006 INCLUDED
@@ -75,7 +75,7 @@ generate h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*d
 centile h1_hat, centile (10 25 75 90)
 
 cd "$graphs"
-hist h1_hat, by(year) saving("empirical_dist_h1hat", replace)
+* hist h1_hat, by(year) saving("empirical_dist_h1hat", replace)
 
 
 * define program for bootstrapping estimates of the centiles of h1_hat
@@ -92,8 +92,9 @@ end
 * run bootstrap program for each of several key centiles
 xtset, clear
 foreach i in 10 25 75 90 {
-	bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles `i'
+	bootstrap ratio=r(cent),rep(1000) seed(8675309) cluster(unique_mandal_id) dots: boot_centiles `i'
 }
+
 
 
 * replicate analysis with only most rainfed mandals
@@ -102,6 +103,6 @@ xtset unique_mandal_id year
 xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, fe robust
 replace h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag
 cd "$graphs"
-hist h1_hat, by(year) saving("empirical_dist_h1hat - rainfed mandals", replace)
+* hist h1_hat, by(year) saving("empirical_dist_h1hat - rainfed mandals", replace)
 
 
