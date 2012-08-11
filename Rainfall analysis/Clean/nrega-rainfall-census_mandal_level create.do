@@ -1,6 +1,6 @@
 /*
 Purpose: Merge rainfall, nrega, and census data
-Files Used: rainfall, nrega_mandal_level_by_season, 
+Files Used: rainfall_coded, nrega_mandal_level_by_season, NREGA census mandal matches, AP Census_ful
 Files Created: nrega-rainfall-census_mandal_level
 Notes: 
 */
@@ -8,9 +8,9 @@ Notes:
 
 * set paths
 macro drop all
-global input = "F:\NREGA\Data - reorganized\Rainfall analysis\Temp"
-global output = "F:\NREGA\Data - reorganized\Rainfall analysis\Clean"
-global extra = "F:\NREGA\Data - reorganized\Extra"
+global input = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Rainfall analysis\Temp"
+global output = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Rainfall analysis\Clean"
+global extra = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Extra"
 set more off
 
 

@@ -8,12 +8,15 @@ Notes:
 
 * set paths
 macro drop all
-global input = "F:\NREGA\Data - reorganized\NREGA\Raw\Mandal level"
-global output = "F:\NREGA\Data - reorganized\Rainfall analysis\Temp"
-global extra = "F:\NREGA\Data - reorganized\Extra"
+global input = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\NREGA\Raw\Mandal level"
+global output = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Rainfall analysis\Temp"
+global extra = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Extra"
 set more off
 
 use "$input\mandal_stats_by_month.dta", clear
+
+****** UNCOMMENT FOLLOWING LINE ONLY IF YOU WANT TO USE INDIRAMMA DATA! *****
+* use "$input\mandal_3200_stats_by_month.dta", clear
 
 gen season = -999
 replace season = 0 if month == 12 | (month >=1 & month <=5)
