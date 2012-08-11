@@ -18,7 +18,7 @@ use "$input\nrega-rainfall-census_mandal_level.dta", clear
 keep if season == 0
 
 egen unique_mandal_id = group(nrega_district_id nrega_mandal_id)
-tsset unique_mandal_id year
+xtset unique_mandal_id year
 
 **** generate variables (only some of which are used *****
 generate amount_per_worker = total_amount / tot_work_p
@@ -65,13 +65,15 @@ program boot_centiles, rclass
 	areg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, robust absorb(unique_mandal_id)
 	capture drop h1_hat
 	generate h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag
-	centile h1_hat, centile(90)
+	centile h1_hat, centile(`0')
 	return scalar cent = r(c_1) 
 end
 
-tsset, clear
-bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles
+xtset, clear
 
+foreach i in 10 25 75 90 {
+	bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles `i'
+}
 
 /*
 capture program drop boot_test
