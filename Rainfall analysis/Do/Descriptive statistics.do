@@ -21,7 +21,6 @@ generate rainfall_lag =  excess_rain_lag
 replace rainfall_lag = -deficit_rain_lag if rainfall_lag == 0
 
 cd "$graphs"
-
 hist rainfall_lag if rainfall_lag <= 50 & rainfall_lag >= -50, by(year) saving("hist of rainfall lag", replace)
 hist  dev_num_days_lag if  dev_num_days_lag >= -20 &  dev_num_days_lag <= 20, by (year) saving("hist of days rain lag", replace)
 
