@@ -48,11 +48,13 @@ generate irrigated_to_rainfed = total_irrigated / total_rainfed
 egen median_irr = pctile(irrigated_to_rainfed), p(50)
 generate mostly_rainfed = (irrigated < median_irr)
 
+generate dummy_2008 = (year == 2008)
+
 
 * Create historgrams of average amount per worker
 cd "$graphs"
-hist amount_per_worker if amount_per_worker < 1000 & year == 2006, by(year) saving("hist_amount_per_worker 2006", replace)
-hist amount_per_worker if amount_per_worker < 1000 & year != 2006, by(year) saving("hist_amount_per_worker wo 2006", replace)
+* hist amount_per_worker if amount_per_worker < 1000 & year == 2006, by(year) saving("hist_amount_per_worker 2006", replace)
+* hist amount_per_worker if amount_per_worker < 1000 & year != 2006, by(year) saving("hist_amount_per_worker wo 2006", replace)
 
 
 *** 2006 INCLUDED
@@ -61,7 +63,14 @@ estimates store amount
 
 *** 2006 EXCLUDED
 drop if year == 2006
-xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, fe robust
+* xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag dummy_2008, fe robust
+
+generate days2008 = dummy_2008*dev_num_days_lag
+generate deficit2008 = dummy_2008*deficit_rain_lag
+generate excess2008 = dummy_2008* excess_rain_lag
+
+
+xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag days2008 deficit2008 excess2008 dummy_2008, fe robust
 estimates store amount_2006_excluded
 
 
@@ -71,13 +80,13 @@ estout amount amount_2006_excluded using "rainfall_regressions.txt", cells(b(sta
 
 
 * generate estimate of h1_hat
-generate h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag
+generate h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag +	_b[days2008]*days2008 + _b[deficit2008]*deficit2008 + _b[excess2008]*excess2008
 centile h1_hat, centile (10 25 75 90)
 
 cd "$graphs"
 hist h1_hat, by(year) saving("empirical_dist_h1hat", replace)
 
-
+/*
 * define program for bootstrapping estimates of the centiles of h1_hat
 * bootstrap throws an error when using xtreg with xtset'ed data so used areg instead
 capture program drop boot_centiles
@@ -92,8 +101,10 @@ end
 * run bootstrap program for each of several key centiles
 xtset, clear
 foreach i in 10 25 75 90 {
-	bootstrap ratio=r(cent),rep(10) seed(123) cluster(unique_mandal_id) dots: boot_centiles `i'
+	bootstrap ratio=r(cent),rep(1000) seed(8675309) cluster(unique_mandal_id) dots: boot_centiles `i'
 }
+
+
 
 * replicate analysis with only most rainfed mandals
 keep if mostly_rainfed
@@ -101,6 +112,6 @@ xtset unique_mandal_id year
 xtreg amount_per_worker dev_num_days_lag  deficit_rain_lag excess_rain_lag i.year, fe robust
 replace h1_hat = _b[dev_num_days_lag]*dev_num_days_lag + _b[deficit_rain_lag]*deficit_rain_lag + _b[excess_rain_lag]*excess_rain_lag
 cd "$graphs"
-hist h1_hat, by(year) saving("empirical_dist_h1hat - rainfed mandals", replace)
+* hist h1_hat, by(year) saving("empirical_dist_h1hat - rainfed mandals", replace)
 
 
