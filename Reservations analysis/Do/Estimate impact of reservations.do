@@ -10,8 +10,8 @@ cmp command you must install that as well.
 * set paths
 macro drop all
 estimates clear
-global input = "F:\NREGA\Data - reorganized\Reservations analysis\Clean"
-global tables = "F:\NREGA\Data - reorganized\Reservations analysis\Regression tables"
+global input = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Reservations analysis\Clean"
+global tables = "\\betfilesrv02\redirected$\johnsonde\Documents\NREGA_main_folder_backup_280809\Data - reorganized\Reservations analysis\Regression tables"
 set more off
 
 
